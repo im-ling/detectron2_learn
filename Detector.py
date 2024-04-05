@@ -19,6 +19,9 @@ class Detector:
         elif model_type == "IS": # instance segmentation
             self.cfg.merge_from_file(model_zoo.get_config_file("COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml"))
             self.cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml")
+        elif model_type == "KP": # instance segmentation
+            self.cfg.merge_from_file(model_zoo.get_config_file("COCO-Keypoints/keypoint_rcnn_R_50_FPN_3x.yaml"))
+            self.cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-Keypoints/keypoint_rcnn_R_50_FPN_3x.yaml")
 
 
         self.cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.7
@@ -31,7 +34,7 @@ class Detector:
         predictions = self.predictor(image)
 
         viz = Visualizer(image[:,:,::-1], metadata=MetadataCatalog.get(self.cfg.DATASETS.TRAIN[0]),
-                         instance_mode=ColorMode.IMAGE_BW)
+                         instance_mode=ColorMode.SEGMENTATION)
         
         output = viz.draw_instance_predictions(predictions["instances"].to("cpu"))
 
