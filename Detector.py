@@ -48,7 +48,8 @@ class Detector:
             viz = Visualizer(image[:,:,::-1], metadata=MetadataCatalog.get(self.cfg.DATASETS.TRAIN[0]))
             output = viz.draw_panoptic_seg_predictions(predictions.to("cpu"), segmenntInfo)
 
-        cv2.imshow("Result", output.get_image()[:,:,::-1])
+        cv2.imwrite("result.jpg", output.get_image())
+        # cv2.imshow("Result", output.get_image()[:,:,::-1])
         cv2.waitKey(0)
     
     def onVideo(self, videoPath):
