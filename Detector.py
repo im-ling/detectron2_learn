@@ -36,7 +36,7 @@ class Detector:
 
         self.predictor = DefaultPredictor(self.cfg)
 
-    def onImage(self, imagePath):
+    def onImage(self, imagePath, saveName):
         image = cv2.imread(imagePath)
         if self.model_type != "PS":
             predictions = self.predictor(image)
@@ -48,17 +48,19 @@ class Detector:
             viz = Visualizer(image[:,:,::-1], metadata=MetadataCatalog.get(self.cfg.DATASETS.TRAIN[0]))
             output = viz.draw_panoptic_seg_predictions(predictions.to("cpu"), segmenntInfo)
 
-        cv2.imwrite("result.jpg", output.get_image())
+        cv2.imwrite("output/"+saveName + ".jpg", output.get_image())
         # cv2.imshow("Result", output.get_image()[:,:,::-1])
         cv2.waitKey(0)
     
-    def onVideo(self, videoPath):
+    def onVideo(self, videoPath,saveName):
         cap = cv2.VideoCapture(videoPath)
         if(cap.isOpened() == False):
             print("Error opening the file ...")
             return
         (success, image) = cap.read()
+        i = 0
         while success:
+            i += 1
             if self.model_type != "PS":
                 predictions = self.predictor(image)
                 viz = Visualizer(image[:,:,::-1], metadata=MetadataCatalog.get(self.cfg.DATASETS.TRAIN[0]),
@@ -69,7 +71,9 @@ class Detector:
                 viz = Visualizer(image[:,:,::-1], metadata=MetadataCatalog.get(self.cfg.DATASETS.TRAIN[0]))
                 output = viz.draw_panoptic_seg_predictions(predictions.to("cpu"), segmenntInfo)
 
-            cv2.imshow("Result", output.get_image()[:,:,::-1])
+            # cv2.imshow("Result", output.get_image()[:,:,::-1])
+            cv2.imwrite("output/"+saveName + ("%05d" % i) + ".jpg", output.get_image())
+
 
             key = cv2.waitKey(1) & 0xff
             if key == ord('q'):
