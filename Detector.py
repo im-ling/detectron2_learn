@@ -11,6 +11,7 @@ import numpy as np
 class Detector:
     def __init__(self, model_type = "OD"):
         self.cfg = get_cfg()
+        self.model_type = model_type
 
         # load model config and pretrained model
         if model_type == "OD": # object detection
@@ -37,12 +38,15 @@ class Detector:
 
     def onImage(self, imagePath):
         image = cv2.imread(imagePath)
-        predictions = self.predictor(image)
-
-        viz = Visualizer(image[:,:,::-1], metadata=MetadataCatalog.get(self.cfg.DATASETS.TRAIN[0]),
-                         instance_mode=ColorMode.IMAGE)
-        
-        output = viz.draw_instance_predictions(predictions["instances"].to("cpu"))
+        if self.model_type != "PS":
+            predictions = self.predictor(image)
+            viz = Visualizer(image[:,:,::-1], metadata=MetadataCatalog.get(self.cfg.DATASETS.TRAIN[0]),
+                            instance_mode=ColorMode.IMAGE)
+            output = viz.draw_instance_predictions(predictions["instances"].to("cpu"))
+        else:
+            predictions, segmenntInfo = self.predictor(image)["panoptic_seg"]
+            viz = Visualizer(image[:,:,::-1], metadata=MetadataCatalog.get(self.cfg.DATASETS.TRAIN[0]))
+            output = viz.draw_panoptic_seg_predictions(predictions.to("cpu"), segmenntInfo)
 
         cv2.imshow("Result", output.get_image()[:,:,::-1])
         cv2.waitKey(0)
