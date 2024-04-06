@@ -25,6 +25,9 @@ class Detector:
         elif model_type == "LVIS": # LVIS segmentation
             self.cfg.merge_from_file(model_zoo.get_config_file("LVISv0.5-InstanceSegmentation/mask_rcnn_X_101_32x8d_FPN_1x.yaml"))
             self.cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("LVISv0.5-InstanceSegmentation/mask_rcnn_X_101_32x8d_FPN_1x.yaml")
+        elif model_type == "PS": # Panoptic Segmentation
+            self.cfg.merge_from_file(model_zoo.get_config_file("COCO-PanopticSegmentation/panoptic_fpn_R_101_3x.yaml"))
+            self.cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-PanopticSegmentation/panoptic_fpn_R_101_3x.yaml")
 
 
         self.cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.7
@@ -37,7 +40,7 @@ class Detector:
         predictions = self.predictor(image)
 
         viz = Visualizer(image[:,:,::-1], metadata=MetadataCatalog.get(self.cfg.DATASETS.TRAIN[0]),
-                         instance_mode=ColorMode.SEGMENTATION)
+                         instance_mode=ColorMode.IMAGE)
         
         output = viz.draw_instance_predictions(predictions["instances"].to("cpu"))
 

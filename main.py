@@ -1,3 +1,3 @@
 from Detector import *
-detector = Detector(model_type="OD")
-detector.onImage("images/pig_test.jpg")
+detector = Detector(model_type="PS")
+detector.onImage("images/thumbnails-04.jpeg")
