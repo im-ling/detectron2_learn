@@ -50,3 +50,28 @@ class Detector:
 
         cv2.imshow("Result", output.get_image()[:,:,::-1])
         cv2.waitKey(0)
+    
+    def onVideo(self, videoPath):
+        cap = cv2.VideoCapture(videoPath)
+        if(cap.isOpened() == False):
+            print("Error opening the file ...")
+            return
+        (success, image) = cap.read()
+        while success:
+            if self.model_type != "PS":
+                predictions = self.predictor(image)
+                viz = Visualizer(image[:,:,::-1], metadata=MetadataCatalog.get(self.cfg.DATASETS.TRAIN[0]),
+                                instance_mode=ColorMode.IMAGE)
+                output = viz.draw_instance_predictions(predictions["instances"].to("cpu"))
+            else:
+                predictions, segmenntInfo = self.predictor(image)["panoptic_seg"]
+                viz = Visualizer(image[:,:,::-1], metadata=MetadataCatalog.get(self.cfg.DATASETS.TRAIN[0]))
+                output = viz.draw_panoptic_seg_predictions(predictions.to("cpu"), segmenntInfo)
+
+            cv2.imshow("Result", output.get_image()[:,:,::-1])
+
+            key = cv2.waitKey(1) & 0xff
+            if key == ord('q'):
+                break
+            (success, image) = cap.read()
+
