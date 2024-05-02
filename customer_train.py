@@ -69,13 +69,13 @@ balloon_metadata = MetadataCatalog.get("balloon_train")
 # 3.showdata (optional)
 dataset_dicts = get_balloon_dicts("balloon/train")
 for d in random.sample(dataset_dicts, 3):
+    file_name = d["file_name"].split("/")[-1]
     img = cv2.imread(d["file_name"])
     visualizer = Visualizer(img[:, :, ::-1], metadata=balloon_metadata, scale=0.5)
     out = visualizer.draw_dataset_dict(d)
-    cv2.imshow(d["file_name"],out.get_image()[:, :, ::-1])
-    # cv2.imshow("Result", output.get_image()[:,:,::-1])
-    cv2.imwrite("output/"+d["file_name"] + ".jpg", out.get_image()[:, :, ::-1])
-    cv2.waitKey(0)
+    # cv2.imshow(d["file_name"],out.get_image()[:, :, ::-1])
+    cv2.imwrite("output/"+ file_name + ".jpg", out.get_image()[:, :, ::-1])
+    # cv2.waitKey(0)
 
 
 
@@ -118,6 +118,7 @@ predictor = DefaultPredictor(cfg)
 from detectron2.utils.visualizer import ColorMode
 dataset_dicts = get_balloon_dicts("balloon/val")
 for d in random.sample(dataset_dicts, 3):    
+    file_name = d["file_name"].split("/")[-1]
     im = cv2.imread(d["file_name"])
     outputs = predictor(im)  # format is documented at https://detectron2.readthedocs.io/tutorials/models.html#model-output-format
     v = Visualizer(im[:, :, ::-1],
@@ -126,5 +127,6 @@ for d in random.sample(dataset_dicts, 3):
                    instance_mode=ColorMode.IMAGE_BW   # remove the colors of unsegmented pixels. This option is only available for segmentation models
     )
     out = v.draw_instance_predictions(outputs["instances"].to("cpu"))
-    cv2.imshow(d["file_name"],out.get_image()[:, :, ::-1])
-    cv2.waitKey(0)
+    # cv2.imshow(d["file_name"],out.get_image()[:, :, ::-1])
+    # cv2.waitKey(0)
+    cv2.imwrite("output/"+ file_name + "_recognize.jpg", out.get_image()[:, :, ::-1])
