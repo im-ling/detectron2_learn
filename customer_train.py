@@ -74,8 +74,8 @@ for d in random.sample(dataset_dicts, 3):
     visualizer = Visualizer(img[:, :, ::-1], metadata=balloon_metadata, scale=0.5)
     out = visualizer.draw_dataset_dict(d)
     # cv2.imshow(d["file_name"],out.get_image()[:, :, ::-1])
-    cv2.imwrite("output/"+ file_name + ".jpg", out.get_image()[:, :, ::-1])
     # cv2.waitKey(0)
+    cv2.imwrite("output/"+ file_name + ".jpg", out.get_image()[:, :, ::-1])
 
 
 
